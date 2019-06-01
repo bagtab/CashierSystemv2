@@ -18,12 +18,18 @@ public class Register {
 	private String address;
 	private double presentMoney;
 
-	public Register() {
+	private Register() {
 		presentMoney = 0;
 		printer = new Printer();
 		accounting = new Accounting();
 	}
-
+	private static class RegisterHolder{
+		private static Register register = new Register();
+	}
+	
+	public static Register getRegister() {
+		return RegisterHolder.register;
+	}
 	/**
 	 * logs relevant data, adds money to register and returns receipt
 	 * 

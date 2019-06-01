@@ -29,7 +29,9 @@ public class Cost {
 	}
 
 	public UpdateDTO addCost(QuantifiedItemDTO item) {
-		calculateNewCost(item);
+		if(item != null) {
+			calculateNewCost(item);
+		}
 		return new UpdateDTO(item, getCost(), getVat());
 	}
 
@@ -100,5 +102,11 @@ public class Cost {
 	 */
 	public SaleDTO getSalesDTO(ItemListDTO itemsDTO) {
 		return new SaleDTO(getCost(), getVat(), getDiscount(), itemsDTO);
+	}
+	public void reset() {
+		cost6 = 0;
+		cost12 = 0;
+		cost25 = 0;
+		discount = 0;
 	}
 }

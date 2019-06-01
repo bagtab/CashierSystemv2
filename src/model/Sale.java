@@ -6,7 +6,7 @@ import dto.ItemListDTO;
 import dto.QuantifiedItemDTO;
 
 /**
- * tracks the currient items and their quantity of the active sale.
+ * tracks the current items and their quantity of the active sale.
  * 
  * @author Linus Johannisson
  *

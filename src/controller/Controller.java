@@ -7,6 +7,8 @@ import dto.QuantifiedItemDTO;
 import dto.ReceiptAndReturn;
 import dto.SaleDTO;
 import dto.UpdateDTO;
+import exceptions.DatabaseFailureException;
+import exceptions.FailedSearchException;
 import integration.Inventory;
 import model.Cost;
 import model.Register;
@@ -30,8 +32,8 @@ public class Controller {
 	 * initializes controller with a new inventory and register.
 	 */
 	public Controller() {
-		itemRegistry = new Inventory();
-		register = new Register();
+		itemRegistry = Inventory.getInventory();
+		register = Register.getRegister();
 		quantity = 1;
 		cost = new Cost();
 	}
@@ -57,10 +59,23 @@ public class Controller {
 	 * @param itemID
 	 *            integer representation of an itemID
 	 * @return UpdateDTO consisting of last added item and current price
+	 * @throws DatabaseFailureException
+	 *             thrown when ItemID has no matching ItemDTO in the inventory
+	 * @throws FailedSearchException
+	 *             thrown when database can't handle the itemID in the inventory
 	 */
-	public UpdateDTO scanItem(int itemID) {
-		QuantifiedItemDTO item = generateQuantifiedItem(itemID);
-		sale.addItem(item);
+	public UpdateDTO scanItem(int itemID){
+		QuantifiedItemDTO item = null;
+		try {
+			item = generateQuantifiedItem(itemID);
+			sale.addItem(item);
+		} catch (DatabaseFailureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FailedSearchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return cost.addCost(item);
 	}
 
@@ -75,7 +90,8 @@ public class Controller {
 		Payment inPayment = new Payment(payment);
 
 		FinalizedSalesLog finalSalesLog = new FinalizedSalesLog(inPayment, getSalesDTO());
-		ReceiptAndReturn receiptAndReturn = new ReceiptAndReturn(register.endSale(finalSalesLog),inPayment.getAmount() - getCost());
+		ReceiptAndReturn receiptAndReturn = new ReceiptAndReturn(register.endSale(finalSalesLog),
+				inPayment.getAmount() - getCost());
 		return receiptAndReturn;
 	}
 
@@ -95,8 +111,13 @@ public class Controller {
 	 * @param itemID
 	 *            integer identification for a specific item
 	 * @return QuantifiedItem with quantity of item and ItemDTO
+	 * @throws DatabaseFailureException
+	 *             thrown when ItemID has no matching ItemDTO in the inventory
+	 * @throws FailedSearchException
+	 *             thrown when database can't handle the itemID in the inventory
 	 */
-	private QuantifiedItemDTO generateQuantifiedItem(int itemID) {
+	private QuantifiedItemDTO generateQuantifiedItem(int itemID)
+			throws FailedSearchException, DatabaseFailureException {
 		ItemDTO itemData = itemRegistry.findItem(itemID);
 		QuantifiedItemDTO item = new QuantifiedItemDTO(itemData, quantity);
 		quantity = 1;
