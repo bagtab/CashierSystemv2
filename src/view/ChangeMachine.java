@@ -1,9 +1,7 @@
 package view;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
+import controller.Controller;
+import dto.UpdateDTO;
 
 /**
  * a machine that tells that gives the cashier the change to give to the
@@ -11,10 +9,12 @@ import javax.swing.JTextArea;
  * 
  * @author Linus Johannisson
  */
-public class ChangeMachine {
+public class ChangeMachine implements Observer {
 	private int[] moneyInBills;
 	private int moneyToReturn;
-
+	public ChangeMachine() {
+		Controller.getController().addObserverForSalesEnd(this);
+	}
 	/**
 	 * returns the amount of money in a new window
 	 * 
@@ -26,6 +26,20 @@ public class ChangeMachine {
 			moneyToReturn = amount.intValue();
 			getCash();
 			returnCash(StringOfMoney());
+		}
+	}
+	/**
+	 * prints money if <code>ItemDTO</code> in updateInfo is null. amount of money is defined by cost in updateInfo 
+	 */
+	@Override
+	public void update(UpdateDTO updateInfo) {
+		if(updateInfo.getItem() == null) {
+			int amount = (int) updateInfo.getCost();
+			if (amount > 0) {
+				moneyToReturn = amount;
+				getCash();
+				returnCash(StringOfMoney());
+			}
 		}
 	}
 
@@ -117,12 +131,14 @@ public class ChangeMachine {
 	 *            text representation of the cash to return
 	 */
 	private void returnCash(String textOfMoney) {
-		JFrame cash = new JFrame("change");
-		cash.setLayout(new BorderLayout());
-		cash.setVisible(true);
-		JTextArea field = new JTextArea(new String(textOfMoney));
-		field.setEditable(false);
-		cash.add(field, BorderLayout.NORTH);
-		cash.setSize(240, 140);
+		new PrintedMoney(textOfMoney);	
+	}
+	private class PrintedMoney extends GeneralDisplay{
+		public PrintedMoney(String textToPrint) {
+			super("money for customer");
+			display.setSize(300, 300);
+			addText(textToPrint);
+			display();
+		}
 	}
 }

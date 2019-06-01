@@ -1,26 +1,34 @@
 package view;
 
-import model.Receipt;
-import java.awt.BorderLayout;
-import javax.swing.*;
+import controller.Controller;
+import dto.UpdateDTO;
 
-public class Printer {
-	String textToPrint;
-
-	public void print(Receipt receipt) {
-		textToPrint = receipt.getText();
-		printOut();
-	}
 /**
  * creates a visual representation of the printed receipt
  */
-	private void printOut() {
-		JFrame receipt = new JFrame("receipt");
-		receipt.setLayout(new BorderLayout());
-		receipt.setVisible(true);
-		JTextArea field = new JTextArea(new String(textToPrint));
-		field.setEditable(false);
-		receipt.add(field, BorderLayout.NORTH);
-		receipt.setSize(240, 400);	
+public class Printer implements Observer {
+	/**
+	 * initializes the Printer and adds it to interfaces updated by
+	 * <Code>Controller</Code>
+	 */
+	public Printer() {
+		Controller.getController().addObserverForSalesEnd(this);
+	}
+
+	private class PrintedMoney extends GeneralDisplay {
+		public PrintedMoney(String textToPrint) {
+			super("money for customer");
+			addText(textToPrint);
+			display.setSize(300, 500);
+			display();
+		}
+	}
+
+	/**
+	 * creates a visual representation of the printed receipt
+	 */
+	@Override
+	public void update(UpdateDTO updateInfo) {
+		new PrintedMoney(updateInfo.getText());
 	}
 }

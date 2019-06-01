@@ -4,11 +4,12 @@ public class UpdateDTO {
 	private QuantifiedItemDTO item;
 	private double cost;
 	private double vat;
-
-	public UpdateDTO(QuantifiedItemDTO item, double cost, double vat) {
+	private String text;
+	public UpdateDTO(QuantifiedItemDTO item, double cost, double vat, String text) {
 		this.item = item;
 		this.cost = cost;
 		this.vat = vat;
+		this.text = text;
 	}
 
 	/**
@@ -30,6 +31,13 @@ public class UpdateDTO {
 	 */
 	public double getVat() {
 		return vat;
+	}
+
+	/**
+	 * @return the text
+	 */
+	public String getText() {
+		return text;
 	}
 
 }

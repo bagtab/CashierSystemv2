@@ -32,7 +32,7 @@ public class Cost {
 		if(item != null) {
 			calculateNewCost(item);
 		}
-		return new UpdateDTO(item, getCost(), getVat());
+		return new UpdateDTO(item, getCost(), getVat(), null);
 	}
 
 	private void calculateNewCost(QuantifiedItemDTO item) {

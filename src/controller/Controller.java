@@ -1,10 +1,11 @@
 package controller;
 
+import java.util.LinkedList;
+
 import dto.FinalizedSalesLog;
 import dto.ItemDTO;
 import dto.Payment;
 import dto.QuantifiedItemDTO;
-import dto.ReceiptAndReturn;
 import dto.SaleDTO;
 import dto.UpdateDTO;
 import exceptions.DatabaseFailureException;
@@ -13,6 +14,7 @@ import integration.Inventory;
 import model.Cost;
 import model.Register;
 import model.Sale;
+import view.Observer;
 
 /**
  * Controller is used for communication between the user interface and the
@@ -27,15 +29,32 @@ public class Controller {
 	private Sale sale;
 	private int quantity;
 	private Cost cost;
+	private LinkedList<Observer> updateForAddedItems;
+	private LinkedList<Observer> updateAtSalesEnd;
 
 	/**
 	 * initializes controller with a new inventory and register.
 	 */
-	public Controller() {
+	private Controller() {
 		itemRegistry = Inventory.getInventory();
-		register = Register.getRegister();
+		register = new Register();
 		quantity = 1;
 		cost = new Cost();
+		updateForAddedItems = new LinkedList<Observer>();
+		updateAtSalesEnd = new LinkedList<Observer>();
+	}
+
+	private static class ControllerHolder {
+		private static Controller instance = new Controller();
+	}
+
+	/**
+	 * returns the singleton instance of controller
+	 * 
+	 * @return controller
+	 */
+	public static Controller getController() {
+		return ControllerHolder.instance;
 	}
 
 	/**
@@ -64,19 +83,19 @@ public class Controller {
 	 * @throws FailedSearchException
 	 *             thrown when database can't handle the itemID in the inventory
 	 */
-	public UpdateDTO scanItem(int itemID){
+	public void scanItem(int itemID) {
 		QuantifiedItemDTO item = null;
 		try {
 			item = generateQuantifiedItem(itemID);
 			sale.addItem(item);
 		} catch (DatabaseFailureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		} catch (FailedSearchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
-		return cost.addCost(item);
+		for (Observer observer : updateForAddedItems) {
+			observer.update(cost.addCost(item));
+		}
 	}
 
 	/**
@@ -86,13 +105,15 @@ public class Controller {
 	 *            money that customer pays for sale
 	 * @return Change to give to customer in a PaymentObject
 	 */
-	public ReceiptAndReturn payAndEndSale(double payment) {
+	public void payAndEndSale(double payment) {
 		Payment inPayment = new Payment(payment);
-
 		FinalizedSalesLog finalSalesLog = new FinalizedSalesLog(inPayment, getSalesDTO());
-		ReceiptAndReturn receiptAndReturn = new ReceiptAndReturn(register.endSale(finalSalesLog),
-				inPayment.getAmount() - getCost());
-		return receiptAndReturn;
+		UpdateDTO update = new UpdateDTO(null, inPayment.getAmount() - getCost(), 0,
+				register.endSale(finalSalesLog).getText());
+		for (Observer observer : updateAtSalesEnd) {
+			observer.update(update);
+		}
+		cost.reset();
 	}
 
 	/**
@@ -130,9 +151,12 @@ public class Controller {
 	 * @param customerID
 	 * @return cost after discounts
 	 */
-	public double applyDiscount(String customerID) {
+	public void applyDiscount(String customerID) {
 		cost.applyDiscount(sale.getItems(), customerID);
-		return getCost();
+		UpdateDTO update = new UpdateDTO(null, cost.getCost(), 0, null);
+		for (Observer observer : updateForAddedItems) {
+			observer.update(update);
+		}
 	}
 
 	/**
@@ -142,5 +166,13 @@ public class Controller {
 	 */
 	private double getCost() {
 		return cost.getCost();
+	}
+
+	public void addObserverForScans(Observer observer) {
+		updateForAddedItems.add(observer);
+	}
+
+	public void addObserverForSalesEnd(Observer observer) {
+		updateAtSalesEnd.add(observer);
 	}
 }

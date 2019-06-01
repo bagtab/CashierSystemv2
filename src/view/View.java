@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import controller.Controller;
-import dto.ReceiptAndReturn;
-import exceptions.ExceptionLogger;
 
 /**
  * the main class used for the cashier to communicate with the program. it
@@ -15,24 +13,18 @@ import exceptions.ExceptionLogger;
  *
  */
 public class View {
-	private Controller contr;
-	private Display display;
-	private ChangeMachine changeMachine;
-	private Printer printer;
+	private Controller controller;
 	private boolean stillScanning;
 	private BufferedReader reader;
-	public View(Controller contr) {
-		this.contr = contr;
-		display = new Display();
-		changeMachine = new ChangeMachine();
-		printer = new Printer();
+	public View() {
+		controller = Controller.getController();
 	}
 
 	/**
 	 * starts a new sale
 	 */
 	public void startNewSale() {
-		contr.startNewSale();
+		controller.startNewSale();
 	}
 
 	/**
@@ -58,11 +50,6 @@ public class View {
 				System.out.println(e.getMessage());
 			}
 		}
-		try {
-			reader.close();
-		} catch (IOException e) {
-			ExceptionLogger.getExceptionLogger().writeToLog("view/View", e);
-		}
 	}
 
 	/**
@@ -80,15 +67,13 @@ public class View {
 		}
 
 		if (getCommand(dividedInput).equals("addMany")) {
-			contr.scanManyItems(extractData(dividedInput));
+			controller.scanManyItems(extractData(dividedInput));
 		}
 		if (getCommand(dividedInput).equals("scan")) {
-			display.refresh(contr.scanItem(extractData(dividedInput)));
-
+			controller.scanItem(extractData(dividedInput));
 		}
 		if (getCommand(dividedInput).equals("done")) {
 			stillScanning = false;
-			display.refreshTotal(-1.0);
 		}
 	}
 
@@ -99,7 +84,7 @@ public class View {
 	 */
 	public void checkForDiscount() throws IOException {
 		String input = reader.readLine();
-		display.refreshTotal(contr.applyDiscount(input));
+		controller.applyDiscount(input);
 	}
 
 	/**
@@ -111,10 +96,7 @@ public class View {
 	public void PayForSale() throws IOException {
 		reader = new BufferedReader(new InputStreamReader(System.in));
 		String input = reader.readLine();
-		ReceiptAndReturn receiptAndReturn = contr.payAndEndSale(Double.parseDouble(input));
-		printer.print(receiptAndReturn.getReceipt());
-		changeMachine.getChange(receiptAndReturn.getCashReturn());
-		reader.close();
+		controller.payAndEndSale(Double.parseDouble(input));
 	}
 
 	/**

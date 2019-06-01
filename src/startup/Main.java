@@ -1,21 +1,29 @@
 package startup;
 
 import java.io.IOException;
-
-import controller.Controller;
+import exceptions.ExceptionLogger;
+import view.ChangeMachine;
+import view.Display;
+import view.Printer;
+import view.TotalRevenueDisplay;
 import view.View;
 
 public class Main {
 	public static void main(String[] args) {
-		Controller contr = new Controller();
-		View view = new View(contr);
+		View view = new View();
+		new TotalRevenueDisplay();
+		new Display();
+		new ChangeMachine();
+		new Printer();
 		view.startNewSale();
 		try {
-			view.scanItems();
-			view.checkForDiscount();
-			view.PayForSale();
+			while(true) {
+				view.scanItems();
+				view.checkForDiscount();
+				view.PayForSale();
+			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			ExceptionLogger.getExceptionLogger().writeToLog("main.Main", e);
 			e.printStackTrace();
 		}
 	}

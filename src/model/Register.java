@@ -3,7 +3,6 @@ package model;
 import dto.FinalizedSalesLog;
 import dto.Payment;
 import integration.Accounting;
-import view.Printer;
 
 /**
  * Register finalizes the sale and stores the amount of money in the register.
@@ -12,23 +11,14 @@ import view.Printer;
  *
  */
 public class Register {
-	private Printer printer;
 	private Accounting accounting;
 	private String shopName;
 	private String address;
 	private double presentMoney;
 
-	private Register() {
+	public Register() {
 		presentMoney = 0;
-		printer = new Printer();
-		accounting = new Accounting();
-	}
-	private static class RegisterHolder{
-		private static Register register = new Register();
-	}
-	
-	public static Register getRegister() {
-		return RegisterHolder.register;
+		accounting = Accounting.getAccounting();
 	}
 	/**
 	 * logs relevant data, adds money to register and returns receipt
@@ -39,7 +29,6 @@ public class Register {
 	public Receipt endSale(FinalizedSalesLog finalSalesLog) {
 		addMoneyToRegistry(finalSalesLog.getPayment());
 		Receipt receipt = new Receipt(finalSalesLog, shopName, address);
-		printer.print(receipt);
 		accounting.recordSalesLog(finalSalesLog);
 		return receipt;
 	}
