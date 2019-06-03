@@ -10,6 +10,7 @@ import dto.QuantifiedItemDTO;
 public class Receipt {
 	private String receiptText;
 	public Receipt(FinalizedSalesLog finalSalesLog, String shopName, String address) {
+		receiptText="";
 		generateStartLine(shopName, address);
 		generateReceipt(finalSalesLog);
 	}

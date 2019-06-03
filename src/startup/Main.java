@@ -9,6 +9,10 @@ import view.TotalRevenueDisplay;
 import view.View;
 
 public class Main {
+	/**
+	 * starts the program.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		View view = new View();
 		new TotalRevenueDisplay();

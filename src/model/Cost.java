@@ -84,7 +84,7 @@ public class Cost {
 	 * @return the vat
 	 */
 	public double getVat() {
-		return cost6 * 0.06 + cost12 * 0.12 + cost25 * 0.25;
+		return ((double)Math.round(100*(cost6 * (1.0-1.0/1.06) + cost12 * (1.0-1.0/1.12) + cost25 * 0.20)))/100;
 	}
 
 	/**

@@ -83,16 +83,10 @@ public class Controller {
 	 * @throws FailedSearchException
 	 *             thrown when database can't handle the itemID in the inventory
 	 */
-	public void scanItem(int itemID) {
+	public void scanItem(int itemID) throws DatabaseFailureException, FailedSearchException {
 		QuantifiedItemDTO item = null;
-		try {
-			item = generateQuantifiedItem(itemID);
-			sale.addItem(item);
-		} catch (DatabaseFailureException e) {
-			System.out.println(e.getMessage());
-		} catch (FailedSearchException e) {
-			System.out.println(e.getMessage());
-		}
+		item = generateQuantifiedItem(itemID);
+		sale.addItem(item);
 		for (Observer observer : updateForAddedItems) {
 			observer.update(cost.addCost(item));
 		}
@@ -108,7 +102,7 @@ public class Controller {
 	public void payAndEndSale(double payment) {
 		Payment inPayment = new Payment(payment);
 		FinalizedSalesLog finalSalesLog = new FinalizedSalesLog(inPayment, getSalesDTO());
-		UpdateDTO update = new UpdateDTO(null, inPayment.getAmount() - getCost(), 0,
+		UpdateDTO update = new UpdateDTO(null, getCost(), inPayment.getAmount() - getCost(),
 				register.endSale(finalSalesLog).getText());
 		for (Observer observer : updateAtSalesEnd) {
 			observer.update(update);

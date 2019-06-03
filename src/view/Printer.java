@@ -18,6 +18,7 @@ public class Printer implements Observer {
 	private class PrintedMoney extends GeneralDisplay {
 		public PrintedMoney(String textToPrint) {
 			super("money for customer");
+			resetDisplayText();
 			addText(textToPrint);
 			display.setSize(300, 500);
 			display();

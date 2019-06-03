@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import controller.Controller;
+import exceptions.DatabaseFailureException;
+import exceptions.FailedSearchException;
 
 /**
  * the main class used for the cashier to communicate with the program. it
@@ -70,7 +72,11 @@ public class View {
 			controller.scanManyItems(extractData(dividedInput));
 		}
 		if (getCommand(dividedInput).equals("scan")) {
-			controller.scanItem(extractData(dividedInput));
+			try {
+				controller.scanItem(extractData(dividedInput));
+			} catch (DatabaseFailureException | FailedSearchException e) {
+				System.out.println(e.getMessage());
+			}
 		}
 		if (getCommand(dividedInput).equals("done")) {
 			stillScanning = false;

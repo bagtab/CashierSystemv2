@@ -14,12 +14,13 @@ public class GeneralDisplay {
 	protected JTextArea textField;
 	public GeneralDisplay(String title){
 		display = new JFrame(title);
-		displayedText = "välkommen!";
+		displayedText = "";
 		display.setLayout(new BorderLayout());
 		display.setVisible(true);
 		textField = new JTextArea(displayedText);
 		textField.setEditable(false);
 		display.add(textField, BorderLayout.NORTH);
+		display.setSize(300, 300);
 
 	}
 	/**

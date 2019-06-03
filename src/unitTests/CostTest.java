@@ -22,21 +22,21 @@ class CostTest {
 	void testWith1Item() {
 		cost.addCost(new QuantifiedItemDTO(new ItemDTO("newspaper", 12, 6), 1));
 		assertEquals(cost.getCost(), 12);
-		assertEquals(cost.getVat(), 0.72);
+		assertEquals(cost.getVat(), 0.68);
 	}
 	
 	@Test
 	void testWithManyItems() {
 		fill();
 		assertEquals(cost.getCost(), 229);
-		assertEquals(cost.getVat(), 42.1);
+		assertEquals(cost.getVat(), 34.89);
 	}
 	@Test
 	void testBigDiscount() {
 		fill();
 		cost.applyDiscount(new Discount(0, 0, 0, 100));
 		assertEquals(cost.getCost(), 129);
-		assertEquals(cost.getVat(), 23.71572052401747);
+		assertEquals(cost.getVat(), 19.65);
 		assertEquals(cost.getDiscount(), 100);
 		
 	}
@@ -45,7 +45,7 @@ class CostTest {
 		fill();
 		cost.applyDiscount(new Discount(5, 5, 5, 0));
 		assertEquals(cost.getCost(), 214, "");
-		assertEquals(cost.getVat(), 39.95);
+		assertEquals(cost.getVat(),33.07);
 		assertEquals(cost.getDiscount(), 15);
 	}
 	void fill() {

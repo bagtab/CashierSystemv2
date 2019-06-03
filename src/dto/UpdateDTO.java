@@ -3,12 +3,12 @@ package dto;
 public class UpdateDTO {
 	private QuantifiedItemDTO item;
 	private double cost;
-	private double vat;
+	private double returnCash;
 	private String text;
-	public UpdateDTO(QuantifiedItemDTO item, double cost, double vat, String text) {
+	public UpdateDTO(QuantifiedItemDTO item, double cost, double returnCash, String text) {
 		this.item = item;
 		this.cost = cost;
-		this.vat = vat;
+		this.returnCash = returnCash;
 		this.text = text;
 	}
 
@@ -27,10 +27,10 @@ public class UpdateDTO {
 	}
 
 	/**
-	 * @return the vat
+	 * @return the returnCash
 	 */
-	public double getVat() {
-		return vat;
+	public double getReturnCash() {
+		return returnCash;
 	}
 
 	/**

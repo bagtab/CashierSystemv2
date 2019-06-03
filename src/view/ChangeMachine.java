@@ -34,7 +34,7 @@ public class ChangeMachine implements Observer {
 	@Override
 	public void update(UpdateDTO updateInfo) {
 		if(updateInfo.getItem() == null) {
-			int amount = (int) updateInfo.getCost();
+			int amount = (int) updateInfo.getReturnCash();
 			if (amount > 0) {
 				moneyToReturn = amount;
 				getCash();

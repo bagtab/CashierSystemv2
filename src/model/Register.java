@@ -3,6 +3,7 @@ package model;
 import dto.FinalizedSalesLog;
 import dto.Payment;
 import integration.Accounting;
+import integration.StoreAndDate;
 
 /**
  * Register finalizes the sale and stores the amount of money in the register.
@@ -15,10 +16,12 @@ public class Register {
 	private String shopName;
 	private String address;
 	private double presentMoney;
-
 	public Register() {
 		presentMoney = 0;
 		accounting = Accounting.getAccounting();
+		StoreAndDate store= StoreAndDate.getStoreAndDate();
+		address = store.getAddress();
+		shopName = store.getName();
 	}
 	/**
 	 * logs relevant data, adds money to register and returns receipt
